@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tflite/tflite.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class MyPage extends StatefulWidget {
   @override
@@ -10,7 +9,6 @@ class MyPage extends StatefulWidget {
 }
 
 class _MyPageState extends State<MyPage> {
-  /// Variables
   PickedFile? _image;
   List<dynamic>? _outputs;
   bool _loading = false;
@@ -19,13 +17,33 @@ class _MyPageState extends State<MyPage> {
   void initState() {
     super.initState();
     _loading = true;
-    _loadModel();
   }
 
   void _loadModel() async {
     await Tflite.loadModel(
-      model: "assets/model_unquant.tflite",
-      labels: "assets/labels.txt",
+      model: "assets/Curcuma/model_curcumalonga.tflite",
+      labels: "assets/Curcuma/labelscurcumalonga.txt",
+    );
+  }
+
+  void _loadModel2() async {
+    await Tflite.loadModel(
+      model: "assets/Curcuma/model_curcumaamada.tflite",
+      labels: "assets/Curcuma/labelscurcumaamada.txt",
+    );
+  }
+
+  void _loadModel3() async {
+    await Tflite.loadModel(
+      model: "assets/Curcuma/model_curcumacasia.tflite",
+      labels: "assets/Curcuma/labelscurcumacasia.txt",
+    );
+  }
+
+  void _loadModel4() async {
+    await Tflite.loadModel(
+      model: "assets/Curcuma/model_curcumazeodaria.tflite",
+      labels: "assets/Curcuma/labelscurcumazeodaria.txt",
     );
   }
 
@@ -39,7 +57,6 @@ class _MyPageState extends State<MyPage> {
         asynch: true);
     setState(() {
       _loading = false;
-//Declare List _outputs in the class which will be used to show the classified classs name and confidence
       _outputs = output;
     });
   }
@@ -52,7 +69,6 @@ class _MyPageState extends State<MyPage> {
 
   final ImagePicker _picker = ImagePicker();
 
-  /// Widget
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -61,45 +77,76 @@ class _MyPageState extends State<MyPage> {
           title: const Text('TFLite Model Testing'),
           backgroundColor: Colors.blue,
         ),
-        body: _loading
-            ? Container(
-                alignment: Alignment.center,
-              )
-            : Container(
-                width: MediaQuery.of(context).size.width,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _image == null
-                        ? Container()
-                        : Image.file(File(_image!.path)),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    _outputs != null
-                        ? Text(
-                            '${_outputs![0]["label"]}',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 20.0,
-                              background: Paint()..color = Colors.white,
-                            ),
-                          )
-                        : Container()
-                  ],
+        body: SingleChildScrollView(
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: 10,
                 ),
-              ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: _optiondialogbox,
-          backgroundColor: Colors.purple,
-          child: Icon(Icons.image),
+                Container(
+                  alignment: Alignment.center,
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(height: 120),
+                        RaisedButton(
+                          onPressed: () => [_loadModel(), _optiondialogbox()],
+                          child: Text("TEST For CURCUMA LONGA"),
+                          color: Colors.blue,
+                          textColor: Colors.white,
+                        ),
+                        SizedBox(height: 20),
+                        RaisedButton(
+                          onPressed: () => [_loadModel2(), _optiondialogbox()],
+                          child: Text("TEST For CURCUMA AMADA"),
+                          color: Colors.blue,
+                          textColor: Colors.white,
+                        ),
+                        SizedBox(height: 20),
+                        RaisedButton(
+                          onPressed: () => [_loadModel3(), _optiondialogbox()],
+                          child: Text("TEST For CURCUMA CASIA"),
+                          color: Colors.blue,
+                          textColor: Colors.white,
+                        ),
+                        SizedBox(height: 20),
+                        RaisedButton(
+                          onPressed: () => [_loadModel4(), _optiondialogbox()],
+                          child: Text("TEST For CURCUMA ZEODARIA"),
+                          color: Colors.blue,
+                          textColor: Colors.white,
+                        ),
+                        SizedBox(height: 10),
+                      ]),
+                ),
+                _image == null
+                    ? Container()
+                    : Image.file(File(_image!.path), width: 500, height: 400),
+                SizedBox(
+                  height: 10,
+                ),
+                _outputs != null
+                    ? Text(
+                        '${_outputs![0]["label"]}',
+                         style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20.0,
+                          background: Paint()..color = Colors.white,
+                        ),
+                      )
+                  : Container()
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 
-  //camera method
   Future<void> _optiondialogbox() {
     return showDialog(
         context: context,
@@ -110,20 +157,24 @@ class _MyPageState extends State<MyPage> {
               child: ListBody(
                 children: <Widget>[
                   GestureDetector(
-                    child: Text(
-                      "Take A Picture",
-                      style: TextStyle(color: Colors.white, fontSize: 20.0),
-                    ),
-                    onTap: openCamera,
-                  ),
+                      child: Text(
+                        "Take A Picture",
+                        style: TextStyle(color: Colors.white, fontSize: 20.0),
+                      ),
+                      onTap: () => [
+                            openCamera(),
+                            Navigator.of(context, rootNavigator: true).pop()
+                          ]),
                   Padding(padding: EdgeInsets.all(10.0)),
                   GestureDetector(
-                    child: Text(
-                      "Select Image From Gallery",
-                      style: TextStyle(color: Colors.white, fontSize: 21.0),
-                    ),
-                    onTap: openGallery,
-                  )
+                      child: Text(
+                        "Select Image From Gallery",
+                        style: TextStyle(color: Colors.white, fontSize: 21.0),
+                      ),
+                      onTap: () => [
+                            openGallery(),
+                            Navigator.of(context, rootNavigator: true).pop()
+                          ])
                 ],
               ),
             ),
@@ -137,14 +188,14 @@ class _MyPageState extends State<MyPage> {
     setState(() {
       _image = image;
     });
+    classifyImage(_image);
   }
 
-  //camera method
   Future openGallery() async {
     var piture = await _picker.getImage(source: ImageSource.gallery);
     setState(() {
       _image = piture;
     });
-    classifyImage(piture);
+    classifyImage(_image);
   }
 }
